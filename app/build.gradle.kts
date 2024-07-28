@@ -80,4 +80,7 @@ dependencies {
 
     // Icons extended
     implementation("androidx.compose.material:material-icons-extended:1.6.8")
+    implementation ("com.google.accompanist:accompanist-systemuicontroller:0.27.0")
+
+
 }

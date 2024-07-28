@@ -1,9 +1,12 @@
 package com.example.roomnotesapp.presentation
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -27,7 +30,7 @@ fun AddNoteScreen(
     onEvent: (NotesEvent) -> Unit
 ) {
 
-    Scaffold(
+    Scaffold(Modifier.windowInsetsPadding(WindowInsets.statusBars),
         floatingActionButton = {
             FloatingActionButton(onClick = {
 
