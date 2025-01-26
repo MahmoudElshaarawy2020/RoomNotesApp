@@ -11,7 +11,8 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface NoteDao {
 
-    @Upsert
+    // Using the correct entity type (Note) instead of NoteState
+    @Insert
     suspend fun insertNote(note: Note)
 
     @Delete

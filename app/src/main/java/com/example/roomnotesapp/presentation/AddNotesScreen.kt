@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -29,23 +28,21 @@ fun AddNoteScreen(
     navController: NavController,
     onEvent: (NotesEvent) -> Unit
 ) {
-
-    Scaffold(Modifier.windowInsetsPadding(WindowInsets.statusBars),
+    Scaffold(
+        modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars),
         floatingActionButton = {
             FloatingActionButton(onClick = {
-
+                // Save the note when the floating action button is clicked
                 onEvent(NotesEvent.SaveNote(
-                    title = state.title.value,
-                    description = state.description.value
+                    title = state.title,
+                    description = state.description
                 ))
                 navController.popBackStack()
             }) {
-
                 Icon(
                     imageVector = Icons.Rounded.Check,
                     contentDescription = "Save Note"
                 )
-
             }
         }
     ) { paddingValues ->
@@ -56,13 +53,15 @@ fun AddNoteScreen(
                 .fillMaxSize()
         ) {
 
+            // Title TextField
             TextField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                value = state.title.value,
+                value = state.title,
                 onValueChange = {
-                    state.title.value = it
+                    // Update title in the state when text is entered
+                    onEvent(NotesEvent.UpdateTitle(it))
                 },
                 textStyle = TextStyle(
                     fontWeight = FontWeight.SemiBold,
@@ -71,25 +70,22 @@ fun AddNoteScreen(
                 placeholder = {
                     Text(text = "Title")
                 }
-
             )
 
+            // Description TextField
             TextField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                value = state.description.value,
+                value = state.description,
                 onValueChange = {
-                    state.description.value = it
+                    // Update description in the state when text is entered
+                    onEvent(NotesEvent.UpdateDescription(it))
                 },
                 placeholder = {
                     Text(text = "Description")
                 }
-
             )
-
         }
-
     }
-
 }

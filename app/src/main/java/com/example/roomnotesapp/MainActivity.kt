@@ -1,6 +1,5 @@
 package com.example.roomnotesapp
 
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -51,7 +50,8 @@ class MainActivity : ComponentActivity() {
                         NotesScreen(
                             state = state,
                             navController = navController,
-                            onEvent = viewModel::onEvent
+                            onEvent = viewModel::onEvent,
+                            viewModel
                         )
                     }
 

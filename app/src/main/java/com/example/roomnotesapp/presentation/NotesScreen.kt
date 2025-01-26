@@ -1,5 +1,6 @@
 package com.example.roomnotesapp.presentation
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -26,23 +27,39 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.roomnotesapp.R
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue.EndToStart
+import androidx.compose.material3.SwipeToDismissBoxValue.Settled
+import androidx.compose.material3.SwipeToDismissBoxValue.StartToEnd
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NotesScreen(
     state: NoteState,
     navController: NavController,
-    onEvent: (NotesEvent) -> Unit
+    onEvent: (NotesEvent) -> Unit,
+    viewModel: NotesViewModel
 ) {
 
     Scaffold(Modifier.windowInsetsPadding(WindowInsets.statusBars),
@@ -76,8 +93,8 @@ fun NotesScreen(
 
         floatingActionButton = {
             FloatingActionButton(onClick = {
-                state.title.value = ""
-                state.description.value = ""
+                state.title = ""
+                state.description = ""
                 navController.navigate("AddNoteScreen")
             }) {
                 Icon(imageVector = Icons.Rounded.Add, contentDescription = "Add new note")
@@ -95,11 +112,13 @@ fun NotesScreen(
 
             items(state.note.size) { index ->
                 NoteItem(
-                    state = state,
+                    state = state,  // Ensure state is correctly passed here
                     index = index,
-                    onEvent = onEvent
+                    onEvent = onEvent,
+                    viewModel = viewModel
                 )
             }
+
 
         }
 
@@ -107,54 +126,81 @@ fun NotesScreen(
 
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NoteItem(
     state: NoteState,
     index: Int,
-    onEvent: (NotesEvent) -> Unit
+    onEvent: (NotesEvent) -> Unit,
+    viewModel: NotesViewModel
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(10.dp))
-            .background(MaterialTheme.colorScheme.primaryContainer)
-            .padding(12.dp)
-    ) {
-        Column(
-            modifier = Modifier.weight(1f)
-        ) {
-
-            Text(
-                text = state.note[index].title,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSecondaryContainer
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = state.note[index].description,
-                fontSize = 16.sp,
-                color = MaterialTheme.colorScheme.onSecondaryContainer
-            )
-
-        }
-
-        IconButton(
-            onClick = {
-                onEvent(NotesEvent.DeleteNote(state.note[index]))
+    val context = LocalContext.current
+    val currentItem by rememberUpdatedState(state)
+    val dismissState = rememberSwipeToDismissBoxState(
+        confirmValueChange = {
+            when(it) {
+                StartToEnd -> {
+                    viewModel.onEvent(NotesEvent.DeleteNote(state.note[index]))
+                    Toast.makeText(context, "Item Deleted", Toast.LENGTH_SHORT).show()
+                }
+                EndToStart -> {
+                    viewModel.onEvent(NotesEvent.DeleteNote(state.note[index]))
+                    Toast.makeText(context, "Item Deleted", Toast.LENGTH_SHORT).show()
+                }
+                Settled -> return@rememberSwipeToDismissBoxState false
             }
+            return@rememberSwipeToDismissBoxState true
+        },
+        // positional threshold of 25%
+        positionalThreshold = { it * .25f }
+    )
+    SwipeToDismissBox(
+        state = dismissState,
+        backgroundContent = { DismissBackground(dismissState)}
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(10.dp))
+                .background(MaterialTheme.colorScheme.primaryContainer)
+                .padding(12.dp)
         ) {
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
 
-            Icon(
-                imageVector = Icons.Rounded.Delete,
-                contentDescription = "Delete Note",
-                modifier = Modifier.size(35.dp),
-                tint = MaterialTheme.colorScheme.onPrimaryContainer
-            )
+                Text(
+                    text = state.note[index].title,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = state.note[index].description,
+                    fontSize = 16.sp,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer
+                )
+
+            }
+
+            IconButton(
+                onClick = {
+                    onEvent(NotesEvent.DeleteNote(state.note[index]))
+                }
+            ) {
+
+                Icon(
+                    imageVector = Icons.Rounded.Delete,
+                    contentDescription = "Delete Note",
+                    modifier = Modifier.size(35.dp),
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+
+            }
 
         }
-
     }
 }
