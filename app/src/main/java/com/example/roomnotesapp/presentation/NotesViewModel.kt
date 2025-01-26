@@ -60,20 +60,12 @@ class NotesViewModel(private val dao: NoteDao) : ViewModel() {
                 isSortedByDateAdded.value = !isSortedByDateAdded.value
             }
 
-            is NotesEvent.UpdateTitle -> {
-                _state.update {
-                    it.copy(
-                        title = event.title
-                    )
-                }
+            is NotesEvent.UpdateDescription -> {
+                _state.update { it.copy(description = event.description) }
             }
 
-            is NotesEvent.UpdateDescription -> {
-                _state.update {
-                    it.copy(
-                        description = event.description
-                    )
-                }
+            is NotesEvent.UpdateTitle -> {
+                _state.update { it.copy(title = event.title) }
             }
         }
     }

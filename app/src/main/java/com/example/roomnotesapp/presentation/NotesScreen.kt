@@ -39,21 +39,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.roomnotesapp.R
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue.EndToStart
 import androidx.compose.material3.SwipeToDismissBoxValue.Settled
 import androidx.compose.material3.SwipeToDismissBoxValue.StartToEnd
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
-import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 fun NotesScreen(
     state: NoteState,
@@ -138,15 +131,17 @@ fun NoteItem(
     val currentItem by rememberUpdatedState(state)
     val dismissState = rememberSwipeToDismissBoxState(
         confirmValueChange = {
-            when(it) {
+            when (it) {
                 StartToEnd -> {
                     viewModel.onEvent(NotesEvent.DeleteNote(state.note[index]))
                     Toast.makeText(context, "Item Deleted", Toast.LENGTH_SHORT).show()
                 }
+
                 EndToStart -> {
                     viewModel.onEvent(NotesEvent.DeleteNote(state.note[index]))
                     Toast.makeText(context, "Item Deleted", Toast.LENGTH_SHORT).show()
                 }
+
                 Settled -> return@rememberSwipeToDismissBoxState false
             }
             return@rememberSwipeToDismissBoxState true
@@ -156,7 +151,7 @@ fun NoteItem(
     )
     SwipeToDismissBox(
         state = dismissState,
-        backgroundContent = { DismissBackground(dismissState)}
+        backgroundContent = { DismissBackground(dismissState) }
     ) {
         Row(
             modifier = Modifier

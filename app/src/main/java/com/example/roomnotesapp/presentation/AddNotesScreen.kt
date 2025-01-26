@@ -26,7 +26,8 @@ import androidx.navigation.NavController
 fun AddNoteScreen(
     state: NoteState,
     navController: NavController,
-    onEvent: (NotesEvent) -> Unit
+    onEvent: (NotesEvent) -> Unit,
+    viewModel: NotesViewModel
 ) {
     Scaffold(
         modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars),
@@ -60,7 +61,6 @@ fun AddNoteScreen(
                     .padding(16.dp),
                 value = state.title,
                 onValueChange = {
-                    // Update title in the state when text is entered
                     onEvent(NotesEvent.UpdateTitle(it))
                 },
                 textStyle = TextStyle(
@@ -79,7 +79,6 @@ fun AddNoteScreen(
                     .padding(16.dp),
                 value = state.description,
                 onValueChange = {
-                    // Update description in the state when text is entered
                     onEvent(NotesEvent.UpdateDescription(it))
                 },
                 placeholder = {

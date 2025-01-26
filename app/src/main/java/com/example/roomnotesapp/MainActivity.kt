@@ -59,7 +59,8 @@ class MainActivity : ComponentActivity() {
                         AddNoteScreen(
                             state = state,
                             navController = navController,
-                            onEvent = viewModel::onEvent
+                            onEvent = viewModel::onEvent,
+                            viewModel
                         )
                     }
                 }
